@@ -1,6 +1,7 @@
 package com.mjsamaha.invenstar.user;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -69,8 +70,17 @@ public class User implements UserDetails {
 	// UserDetails - Spring Security reads these on every request
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		// "ROLE_" prefix is required by Spring Security's hasRole() checks
-		return List.of(new SimpleGrantedAuthority("ROLE_" + user_role.name()));
+	    // Start with all permissions for this role
+	    List<GrantedAuthority> authorities = new ArrayList<>(
+	        user_role.getPermissions().stream()
+	            .map(permission -> new SimpleGrantedAuthority(permission.name()))
+	            .toList()
+	    );
+
+	    // Also add the role itself — needed for hasRole() checks in SecurityConfig
+	    authorities.add(new SimpleGrantedAuthority("ROLE_" + user_role.name()));
+
+	    return authorities;
 	}
 
 	@Override
