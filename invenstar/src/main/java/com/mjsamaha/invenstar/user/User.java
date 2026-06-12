@@ -30,91 +30,90 @@ public class User implements UserDetails {
 	@GeneratedValue(strategy = GenerationType.UUID)
 	@Column(name = "user_id", updatable = false, nullable = false)
 	private UUID user_id;
-	
+
 	@Column(name = "user_username", unique = true, nullable = false, length = 50)
 	private String user_username;
-	
+
 	@Column(name = "user_email", unique = true, nullable = false, length = 100)
 	private String user_email;
-	
+
 	@Column(name = "user_password", nullable = false)
 	private String user_password;
-	
+
 	@Enumerated(EnumType.STRING)
 	@Column(name = "user_role", nullable = false)
 	private UserRole user_role;
-	
+
 	@Column(name = "user_enabled", nullable = false)
 	private boolean user_enabled;
-	
+
 	@Column(name = "user_created_at", updatable = false)
 	private LocalDateTime user_created_at;
-	
+
 	@Column(name = "user_updated_at", nullable = false)
 	private LocalDateTime user_updated_at;
-	
-	
+
 	// Lifecycle Hooks - Let the DB own the timestamps, not app logic
-	
+
 	@PrePersist
 	protected void onCreate() {
 		user_created_at = LocalDateTime.now();
 		user_updated_at = LocalDateTime.now();
 	}
-	
+
 	@PreUpdate
 	protected void onUpdate() {
 		user_updated_at = LocalDateTime.now();
 	}
-	
+
 	// UserDetails - Spring Security reads these on every request
 	@Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        // "ROLE_" prefix is required by Spring Security's hasRole() checks
-        return List.of(new SimpleGrantedAuthority("ROLE_" + user_role.name()));
-    }
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		// "ROLE_" prefix is required by Spring Security's hasRole() checks
+		return List.of(new SimpleGrantedAuthority("ROLE_" + user_role.name()));
+	}
 
-    @Override
-    public String getPassword() {
-        return user_password;
-    }
-    
-    // Spring uses this as the unique identity key during authentication
-    @Override
-    public String getUsername() {
-        return user_username;
-    }
+	@Override
+	public String getPassword() {
+		return user_password;
+	}
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return true; // extend later if you add account expiry logic
-    }
+	// Spring uses this as the unique identity key during authentication
+	@Override
+	public String getUsername() {
+		return user_username;
+	}
 
-    @Override
-    public boolean isAccountNonLocked() {
-        return true; // extend later for login-attempt lockout
-    }
+	@Override
+	public boolean isAccountNonExpired() {
+		return true; // extend later if you add account expiry logic
+	}
 
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true; // extend later for password rotation policies
-    }
+	@Override
+	public boolean isAccountNonLocked() {
+		return true; // extend later for login-attempt lockout
+	}
 
-    @Override
-    public boolean isEnabled() {
-        return user_enabled; // ties directly to your existing active flag
-    }
-	
-    public User() {
-    	
-    }
-    
-    public User(String user_username, String user_email, String user_password, UserRole user_role) {
-        this.user_username = user_username;
-        this.user_email    = user_email;
-        this.user_password = user_password;
-        this.user_role     = user_role;
-    }
+	@Override
+	public boolean isCredentialsNonExpired() {
+		return true; // extend later for password rotation policies
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return user_enabled; // ties directly to your existing active flag
+	}
+
+	public User() {
+
+	}
+
+	public User(String user_username, String user_email, String user_password, UserRole user_role) {
+		this.user_username = user_username;
+		this.user_email = user_email;
+		this.user_password = user_password;
+		this.user_role = user_role;
+	}
 
 	public UUID getUser_id() {
 		return user_id;
@@ -179,5 +178,5 @@ public class User implements UserDetails {
 	public void setUser_updated_at(LocalDateTime user_updated_at) {
 		this.user_updated_at = user_updated_at;
 	}
-   
+
 }
